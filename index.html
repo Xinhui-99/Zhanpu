@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>易经起卦 - 金钱起卦法</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+      background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 50%, #fff5eb 100%);
+      min-height: 100vh;
+      color: #44403c;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+    
+    /* 标题区域 */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    
+    .header .taiji {
+      font-size: 56px;
+      margin-bottom: 8px;
+      animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #78350f;
+      letter-spacing: 6px;
+      margin-bottom: 6px;
+    }
+    
+    .header p {
+      font-size: 14px;
+      color: #a8a29e;
+    }
+    
+    /* 进度指示器 */
+    .progress {
+      margin-bottom: 24px;
+    }
+    
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    
+    .progress-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .progress-dot.completed {
+      background: linear-gradient(135deg, #b45309, #92400e);
+      color: white;
+      box-shadow: 0 4px 14px rgba(180, 83, 9, 0.35);
+      transform: scale(1.05);
+    }
+    
+    .progress-dot.current {
+      background: #fef3c7;
+      color: #b45309;
+      border: 2.5px solid #b45309;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .progress-dot.pending {
+      background: #f5f5f4;
+      color: #a8a29e;
+      border: 1px solid #e7e5e4;
+    }
+    
+    .progress-text {
+      text-align: center;
+      font-size: 15px;
+      color: #b45309;
+      font-weight: 600;
+    }
+    
+    /* 铜钱操作区 */
+    .coin-area {
+      background: white;
+      border-radius: 24px;
+      padding: 28px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 30px rgba(120, 53, 15, 0.1);
+      border: 1px solid #fde68a;
+    }
+    
+    .coins-container {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+    }
+    
+    /* 乾隆通宝铜钱 */
+    .coin {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .coin.empty {
+      background: linear-gradient(145deg, #fafaf9, #f5f5f4);
+      border: 2.5px dashed #d6d3d1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .coin.empty::after {
+      content: '?';
+      font-size: 36px;
+      color: #a8a29e;
+      font-weight: 300;
+    }
+    
+    .coin.shaking {
+      animation: coinShake 0.1s ease-in-out infinite;
+    }
+    
+    .coin.flipped {
+      background: linear-gradient(145deg, #d97706, #b45309 50%, #92400e);
+      box-shadow: 
+        0 10px 30px rgba(180, 83, 9, 0.4),
+        0 4px 12px rgba(120, 53, 15, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.25),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.2);
+      border: 4px solid #78350f;
+      animation: coinAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes coinAppear {
+      0% { transform: scale(0.5) rotateY(180deg); opacity: 0; }
+      100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+    }
+    
+    /* 铜钱方孔 */
+    .coin-hole {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #1c1917, #292524);
+      border: 1.5px solid #44403c;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+    
+    /* 正面 - 乾隆通宝 */
+    .coin.yang .coin-char {
+      position: absolute;
+      font-family: 'STKaiti', 'KaiTi', 'SimSun', 'Songti SC', serif;
+      font-weight: bold;
+      color: #fef3c7;
+      font-size: 16px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .coin.yang .char-top { top: 8px; left: 50%; transform: translateX(-50%); }
+    .coin.yang .char-bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .coin.yang .char-left { left: 8px; top: 50%; transform: translateY(-50%); }
+    .coin.yang .char-right { right: 8px; top: 50%; transform: translateY(-50%); }
+    
+    /* 反面 - 满文 */
+    .coin.yin .coin-manchu {
+      position: absolute;
+      font-size: 14px;
+      color: #fef3c7;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .coin.yin .manchu-left { left: 12px; top: 50%; transform: translateY(-50%); }
+    .coin.yin .manchu-right { right: 12px; top: 50%; transform: translateY(-50%); }
+    
+    /* 铜钱标签 */
+    .coin-label {
+      position: absolute;
+      bottom: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    .coin.yang .coin-label {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    
+    .coin.yin .coin-label {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+    }
+    
+    /* 本次结果框 */
+    .result-box {
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .result-box.normal {
+      background: linear-gradient(135deg, #fef9c3, #fde68a);
+      border: 2px solid #f59e0b;
+    }
+    
+    .result-box.changing {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border: 2px solid #ef4444;
+    }
+    
+    .result-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    
+    .result-sum {
+      font-size: 14px;
+      color: #78716c;
+    }
+    
+    .result-sum strong {
+      font-size: 28px;
+      color: #b45309;
+      margin-left: 4px;
+    }
+    
+    .result-arrow {
+      font-size: 22px;
+      color: #a8a29e;
+    }
+    
+    .result-name {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    .result-box.normal .result-name { color: #b45309; }
+    .result-box.changing .result-name { color: #dc2626; }
+    
+    .result-symbol {
+      font-size: 32px;
+    }
+    
+    .changing-badge {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    /* 按钮 */
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .btn {
+      padding: 16px 36px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #b45309, #92400e);
+      color: white;
+      box-shadow: 0 6px 20px rgba(180, 83, 9, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(180, 83, 9, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0) scale(0.98);
+    }
+    
+    .btn-primary:disabled {
+      background: linear-gradient(135deg, #d6d3d1, #a8a29e);
+      color: #78716c;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #57534e;
+      border: 2px solid #e7e5e4;
+    }
+    
+    .btn-secondary:hover {
+      background: #f5f5f4;
+      border-color: #d6d3d1;
+    }
+    
+    .btn-secondary:active {
+      background: #e7e5e4;
+    }
+    
+    /* 六爻进度显示 */
+    .hexagram-progress {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 24px rgba(120, 53, 15, 0.08);
+      border: 1px solid #fde68a;
+    }
+    
+    .hexagram-progress h3 {
+      text-align: center;
+      font-size: 14px;
+      color: #b45309;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    
+    .lines-display {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .line-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .line-bar {
+      height: 14px;
+      border-radius: 3px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .line-bar.yang {
+      width: 100px;
+      background: linear-gradient(90deg, #78350f, #92400e, #78350f);
+    }
+    
+    .line-bar.yin {
+      width: 42px;
+      background: linear-gradient(90deg, #78350f, #92400e, #78350f);
+    }
+    
+    .line-bar.changing {
+      background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626) !important;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .line-gap {
+      width: 16px;
+    }
+    
+    .line-label {
+      font-size: 11px;
+      color: #dc2626;
+      font-weight: 700;
+      background: #fee2e2;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .lines-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .line-tag {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+    
+    .line-tag.normal {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .line-tag.changing {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    /* 最终卦象结果 */
+    .final-result {
+      background: white;
+      border-radius: 24px;
+      padding: 28px 20px;
+      box-shadow: 0 12px 40px rgba(120, 53, 15, 0.15);
+      border: 3px solid #f59e0b;
+      animation: resultAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes resultAppear {
+      0% { opacity: 0; transform: translateY(40px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .result-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .result-name-large {
+      font-size: 72px;
+      font-family: 'STKaiti', 'KaiTi', 'SimSun', 'Songti SC', serif;
+      color: #b45309;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 4px rgba(180, 83, 9, 0.2);
+    }
+    
+    .result-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #78350f;
+      margin-bottom: 10px;
+    }
+    
+    .result-trigrams {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      font-size: 14px;
+      color: #78716c;
+    }
+    
+    .result-trigrams span {
+      background: #fef3c7;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    
+    .hexagram-display {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #fffbf5, #fef3c7);
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .six-lines-record {
+      background: #fffbf5;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .six-lines-record h4 {
+      font-size: 13px;
+      color: #b45309;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    .six-lines-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    
+    .six-line-item {
+      text-align: center;
+      padding: 10px 4px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    
+    .six-line-item.normal {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    
+    .six-line-item.changing {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #dc2626;
+    }
+    
+    .six-line-item .pos {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .six-line-item .symbol {
+      font-size: 20px;
+    }
+    
+    /* 卦辞卡片 */
+    .info-card {
+      background: #fffbf5;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 12px;
+      border-left: 5px solid #f59e0b;
+    }
+    
+    .info-card.warning {
+      border-left-color: #ef4444;
+      background: #fef2f2;
+    }
+    
+    .info-card h4 {
+      font-size: 13px;
+      color: #b45309;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .info-card.warning h4 {
+      color: #dc2626;
+    }
+    
+    .info-card p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #44403c;
+    }
+    
+    .info-card p.quote {
+      font-style: italic;
+      font-size: 18px;
+      color: #78350f;
+    }
+    
+    /* 起卦说明 */
+    .instructions {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-top: 28px;
+      border: 1px solid #fde68a;
+      box-shadow: 0 4px 16px rgba(120, 53, 15, 0.06);
+    }
+    
+    .instructions h4 {
+      text-align: center;
+      font-size: 14px;
+      color: #b45309;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    
+    .instructions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    
+    .instruction-item {
+      text-align: center;
+      padding: 12px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+    
+    .instruction-item.yang-type {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    
+    .instruction-item.yin-type {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+    }
+    
+    .instruction-item div:first-child {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .instruction-item strong {
+      font-size: 14px;
+    }
+    
+    .instructions-text {
+      text-align: center;
+      font-size: 12px;
+      color: #78716c;
+      line-height: 1.8;
+      background: #f5f5f4;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    
+    /* 页脚 */
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+      padding-bottom: 24px;
+      font-size: 13px;
+      color: #a8a29e;
+      line-height: 2;
+    }
+    
+    /* 动画 */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    @keyframes coinShake {
+      0%, 100% { transform: rotate(-8deg) scale(1.08); }
+      50% { transform: rotate(8deg) scale(1.08); }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 响应式 - 小屏幕 */
+    @media (max-width: 380px) {
+      .coin {
+        width: 78px;
+        height: 78px;
+      }
+      .coin.yang .coin-char {
+        font-size: 14px;
+      }
+      .coin.yang .char-top { top: 6px; }
+      .coin.yang .char-bottom { bottom: 6px; }
+      .coin.yang .char-left { left: 6px; }
+      .coin.yang .char-right { right: 6px; }
+      .coin-hole {
+        width: 15px;
+        height: 15px;
+      }
+      .coins-container {
+        gap: 10px;
+      }
+      .btn {
+        padding: 14px 24px;
+        font-size: 15px;
+      }
+    }
+    
+    /* 响应式 - 大屏幕 */
+    @media (min-width: 768px) {
+      .container {
+        padding: 40px 24px;
+      }
+      .header .taiji {
+        font-size: 72px;
+      }
+      .header h1 {
+        font-size: 40px;
+      }
+      .coin {
+        width: 100px;
+        height: 100px;
+      }
+      .coin.yang .coin-char {
+        font-size: 18px;
+      }
+      .coins-container {
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+
+  <script>
+    // ==================== 64卦完整数据 ====================
+    const hexagrams = {
+      '111111': { name: '乾', title: '乾为天', nature: '刚健', brief: '元亨利贞', desc: '天行健，君子以自强不息。象征刚健进取，大有作为。' },
+      '000000': { name: '坤', title: '坤为地', nature: '柔顺', brief: '元亨，利牝马之贞', desc: '地势坤，君子以厚德载物。象征包容承载，顺势而为。' },
+      '100010': { name: '屯', title: '水雷屯', nature: '始生', brief: '元亨利贞，勿用有攸往', desc: '云雷屯，君子以经纶。象征万物初生，艰难起步。' },
+      '010001': { name: '蒙', title: '山水蒙', nature: '启蒙', brief: '亨，匪我求童蒙', desc: '山下出泉，蒙。君子以果行育德。象征启蒙教化，循序渐进。' },
+      '111010': { name: '需', title: '水天需', nature: '等待', brief: '有孚，光亨贞吉', desc: '云上于天，需。君子以饮食宴乐。象征守候时机，静待良机。' },
+      '010111': { name: '讼', title: '天水讼', nature: '争讼', brief: '有孚窒惕，中吉', desc: '天与水违行，讼。君子以作事谋始。象征争端纷争，谨慎处之。' },
+      '010000': { name: '师', title: '地水师', nature: '军旅', brief: '贞，丈人吉', desc: '地中有水，师。君子以容民畜众。象征统帅军旅，众志成城。' },
+      '000010': { name: '比', title: '水地比', nature: '亲附', brief: '吉，原筮元永贞', desc: '地上有水，比。先王以建万国，亲诸侯。象征亲和团结，相互依附。' },
+      '111011': { name: '小畜', title: '风天小畜', nature: '积蓄', brief: '亨，密云不雨', desc: '风行天上，小畜。君子以懿文德。象征积少成多，蓄势待发。' },
+      '110111': { name: '履', title: '天泽履', nature: '践履', brief: '履虎尾，不咥人', desc: '上天下泽，履。君子以辨上下，定民志。象征循礼而行，谨慎从事。' },
+      '111000': { name: '泰', title: '地天泰', nature: '通泰', brief: '小往大来，吉亨', desc: '天地交，泰。后以财成天地之道。象征天地交泰，万事亨通。' },
+      '000111': { name: '否', title: '天地否', nature: '闭塞', brief: '否之匪人，不利君子贞', desc: '天地不交，否。君子以俭德辟难。象征闭塞不通，韬光养晦。' },
+      '101111': { name: '同人', title: '天火同人', nature: '和同', brief: '同人于野，亨', desc: '天与火，同人。君子以类族辨物。象征志同道合，和衷共济。' },
+      '111101': { name: '大有', title: '火天大有', nature: '富有', brief: '元亨', desc: '火在天上，大有。君子以遏恶扬善。象征盛大丰裕，前途光明。' },
+      '001000': { name: '谦', title: '地山谦', nature: '谦逊', brief: '亨，君子有终', desc: '地中有山，谦。君子以裒多益寡。象征谦虚礼让，终获成功。' },
+      '000100': { name: '豫', title: '雷地豫', nature: '愉悦', brief: '利建侯行师', desc: '雷出地奋，豫。先王以作乐崇德。象征欢乐愉悦，顺时而动。' },
+      '100110': { name: '随', title: '泽雷随', nature: '随从', brief: '元亨利贞，无咎', desc: '泽中有雷，随。君子以向晦入宴息。象征随顺时势，与时偕行。' },
+      '011001': { name: '蛊', title: '山风蛊', nature: '整饬', brief: '元亨，利涉大川', desc: '山下有风，蛊。君子以振民育德。象征革故鼎新，拨乱反正。' },
+      '110000': { name: '临', title: '地泽临', nature: '临察', brief: '元亨利贞', desc: '泽上有地，临。君子以教思无穷。象征居高临下，统御有方。' },
+      '000011': { name: '观', title: '风地观', nature: '观察', brief: '盥而不荐，有孚颙若', desc: '风行地上，观。先王以省方观民设教。象征审时度势，观察入微。' },
+      '100101': { name: '噬嗑', title: '火雷噬嗑', nature: '决断', brief: '亨，利用狱', desc: '雷电噬嗑。先王以明罚敕法。象征刚柔相济，果断决定。' },
+      '101001': { name: '贲', title: '山火贲', nature: '文饰', brief: '亨，小利有攸往', desc: '山下有火，贲。君子以明庶政，无敢折狱。象征文质彬彬，华美装饰。' },
+      '000001': { name: '剥', title: '山地剥', nature: '剥落', brief: '不利有攸往', desc: '山附于地，剥。上以厚下安宅。象征阴盛阳衰，顺势而止。' },
+      '100000': { name: '复', title: '地雷复', nature: '回复', brief: '亨，出入无疾', desc: '雷在地中，复。先王以至日闭关。象征一阳来复，否极泰来。' },
+      '100111': { name: '无妄', title: '天雷无妄', nature: '诚实', brief: '元亨利贞', desc: '天下雷行，物与无妄。先王以茂对时育万物。象征诚实无欺，顺应自然。' },
+      '111001': { name: '大畜', title: '山天大畜', nature: '蓄养', brief: '利贞，不家食吉', desc: '天在山中，大畜。君子以多识前言往行，以畜其德。象征大有积蓄，蓄势待发。' },
+      '100001': { name: '颐', title: '山雷颐', nature: '养生', brief: '贞吉，观颐自求口实', desc: '山下有雷，颐。君子以慎言语，节饮食。象征修身养性，颐养正道。' },
+      '011110': { name: '大过', title: '泽风大过', nature: '过度', brief: '栋桡，利有攸往', desc: '泽灭木，大过。君子以独立不惧，遁世无闷。象征阳刚过甚，谨防过犹不及。' },
+      '010010': { name: '坎', title: '坎为水', nature: '险陷', brief: '习坎，有孚维心亨', desc: '水洊至，习坎。君子以常德行，习教事。象征险阻重重，坚毅前行。' },
+      '101101': { name: '离', title: '离为火', nature: '光明', brief: '利贞，亨，畜牝牛吉', desc: '明两作，离。大人以继明照于四方。象征光明普照，文明昌盛。' },
+      '001110': { name: '咸', title: '泽山咸', nature: '感应', brief: '亨利贞，取女吉', desc: '山上有泽，咸。君子以虚受人。象征心意相感，情投意合。' },
+      '011100': { name: '恒', title: '雷风恒', nature: '恒久', brief: '亨，无咎利贞', desc: '雷风恒。君子以立不易方。象征恒心守道，持之以恒。' },
+      '001111': { name: '遁', title: '天山遁', nature: '退避', brief: '亨，小利贞', desc: '天下有山，遁。君子以远小人，不恶而严。象征以退为进，明哲保身。' },
+      '111100': { name: '大壮', title: '雷天大壮', nature: '壮盛', brief: '利贞', desc: '雷在天上，大壮。君子以非礼弗履。象征阳刚壮盛，谨防过刚。' },
+      '000101': { name: '晋', title: '火地晋', nature: '进取', brief: '康侯用锡马蕃庶', desc: '明出地上，晋。君子以自昭明德。象征光明在前，积极进取。' },
+      '101000': { name: '明夷', title: '地火明夷', nature: '韬晦', brief: '利艰贞', desc: '明入地中，明夷。君子以莅众，用晦而明。象征光明受损，韬光养晦。' },
+      '101011': { name: '家人', title: '风火家人', nature: '家道', brief: '利女贞', desc: '风自火出，家人。君子以言有物而行有恒。象征家庭和睦，齐家治国。' },
+      '110101': { name: '睽', title: '火泽睽', nature: '乖异', brief: '小事吉', desc: '上火下泽，睽。君子以同而异。象征求同存异，化解矛盾。' },
+      '001010': { name: '蹇', title: '水山蹇', nature: '艰难', brief: '利西南，不利东北', desc: '山上有水，蹇。君子以反身修德。象征行路艰难，反躬自省。' },
+      '010100': { name: '解', title: '雷水解', nature: '解除', brief: '利西南，无所往', desc: '雷雨作，解。君子以赦过宥罪。象征解除困难，雨过天晴。' },
+      '110001': { name: '损', title: '山泽损', nature: '减损', brief: '有孚，元吉无咎', desc: '山下有泽，损。君子以惩忿窒欲。象征损己益人，先损后益。' },
+      '100011': { name: '益', title: '风雷益', nature: '增益', brief: '利有攸往，利涉大川', desc: '风雷益。君子以见善则迁，有过则改。象征损上益下，大有裨益。' },
+      '111110': { name: '夬', title: '泽天夬', nature: '决断', brief: '扬于王庭，孚号有厉', desc: '泽上于天，夬。君子以施禄及下，居德则忌。象征果断决策，除旧布新。' },
+      '011111': { name: '姤', title: '天风姤', nature: '遇合', brief: '女壮，勿用取女', desc: '天下有风，姤。后以施命诰四方。象征不期而遇，把握机缘。' },
+      '000110': { name: '萃', title: '泽地萃', nature: '聚集', brief: '亨，王假有庙', desc: '泽上于地，萃。君子以除戎器，戒不虞。象征聚集群贤，齐心协力。' },
+      '011000': { name: '升', title: '地风升', nature: '上升', brief: '元亨，用见大人', desc: '地中生木，升。君子以顺德，积小以高大。象征步步高升，稳健发展。' },
+      '010110': { name: '困', title: '泽水困', nature: '困顿', brief: '亨，贞大人吉', desc: '泽无水，困。君子以致命遂志。象征处境困顿，坚守正道。' },
+      '011010': { name: '井', title: '水风井', nature: '滋养', brief: '改邑不改井', desc: '木上有水，井。君子以劳民劝相。象征井水养人，取之不竭。' },
+      '101110': { name: '革', title: '泽火革', nature: '变革', brief: '已日乃孚，元亨利贞', desc: '泽中有火，革。君子以治历明时。象征除旧革新，顺应变化。' },
+      '011101': { name: '鼎', title: '火风鼎', nature: '鼎新', brief: '元吉，亨', desc: '木上有火，鼎。君子以正位凝命。象征革故鼎新，稳固基业。' },
+      '100100': { name: '震', title: '震为雷', nature: '震动', brief: '亨，震来虩虩', desc: '洊雷震。君子以恐惧修省。象征雷声震动，警醒奋发。' },
+      '001001': { name: '艮', title: '艮为山', nature: '止静', brief: '艮其背，不获其身', desc: '兼山艮。君子以思不出其位。象征适可而止，审时度势。' },
+      '001011': { name: '渐', title: '风山渐', nature: '渐进', brief: '女归吉，利贞', desc: '山上有木，渐。君子以居贤德善俗。象征循序渐进，稳步发展。' },
+      '110100': { name: '归妹', title: '雷泽归妹', nature: '归宿', brief: '征凶，无攸利', desc: '泽上有雷，归妹。君子以永终知敝。象征少女出嫁，慎始慎终。' },
+      '101100': { name: '丰', title: '雷火丰', nature: '丰盛', brief: '亨，王假之', desc: '雷电皆至，丰。君子以折狱致刑。象征丰收盛大，居安思危。' },
+      '001101': { name: '旅', title: '火山旅', nature: '旅行', brief: '小亨，旅贞吉', desc: '山上有火，旅。君子以明慎用刑而不留狱。象征行旅在外，小心谨慎。' },
+      '011011': { name: '巽', title: '巽为风', nature: '顺从', brief: '小亨，利有攸往', desc: '随风巽。君子以申命行事。象征柔顺谦逊，顺势而行。' },
+      '110110': { name: '兑', title: '兑为泽', nature: '喜悦', brief: '亨利贞', desc: '丽泽兑。君子以朋友讲习。象征和悦喜乐，以诚相待。' },
+      '010011': { name: '涣', title: '风水涣', nature: '涣散', brief: '亨，王假有庙', desc: '风行水上，涣。先王以享于帝，立庙。象征涣散离析，重新聚合。' },
+      '110010': { name: '节', title: '水泽节', nature: '节制', brief: '亨，苦节不可贞', desc: '泽上有水，节。君子以制数度，议德行。象征适度节制，过犹不及。' },
+      '110011': { name: '中孚', title: '风泽中孚', nature: '诚信', brief: '豚鱼吉，利涉大川', desc: '泽上有风，中孚。君子以议狱缓死。象征内心诚信，感化万物。' },
+      '001100': { name: '小过', title: '雷山小过', nature: '小过', brief: '亨利贞，可小事', desc: '山上有雷，小过。君子以行过乎恭，丧过乎哀。象征稍有过度，谨小慎微。' },
+      '101010': { name: '既济', title: '水火既济', nature: '完成', brief: '亨小，利贞', desc: '水在火上，既济。君子以思患而豫防之。象征事已成功，居安思危。' },
+      '010101': { name: '未济', title: '火水未济', nature: '未完', brief: '亨，小狐汔济', desc: '火在水上，未济。君子以慎辨物居方。象征尚未完成，前途光明。' }
+    };
+
+    // 八卦数据
+    const trigrams = {
+      '111': { name: '乾', symbol: '☰', element: '天' },
+      '000': { name: '坤', symbol: '☷', element: '地' },
+      '100': { name: '震', symbol: '☳', element: '雷' },
+      '010': { name: '坎', symbol: '☵', element: '水' },
+      '001': { name: '艮', symbol: '☶', element: '山' },
+      '011': { name: '巽', symbol: '☴', element: '风' },
+      '101': { name: '离', symbol: '☲', element: '火' },
+      '110': { name: '兑', symbol: '☱', element: '泽' }
+    };
+
+    const posNames = ['初', '二', '三', '四', '五', '上'];
+
+    // ==================== 应用状态 ====================
+    let state = {
+      lines: [],
+      currentStep: 0,
+      coins: [null, null, null],
+      isShaking: false,
+      canProceed: true,
+      currentLineResult: null,
+      hexagram: null,
+      showResult: false
+    };
+
+    // ==================== 渲染函数 ====================
+    function render() {
+      const app = document.getElementById('app');
+      
+      let html = `
+        <header class="header">
+          <div class="taiji">☯</div>
+          <h1>易经起卦</h1>
+          <p>金钱起卦法 · 点击六次完成起卦</p>
+        </header>
+      `;
+
+      // 进度指示
+      html += `
+        <div class="progress">
+          <div class="progress-dots">
+            ${[1,2,3,4,5,6].map(step => `
+              <div class="progress-dot ${step <= state.currentStep ? 'completed' : step === state.currentStep + 1 ? 'current' : 'pending'}">
+                ${step <= state.currentStep ? '✓' : step}
+              </div>
+            `).join('')}
+          </div>
+          <div class="progress-text">
+            ${state.currentStep >= 6 ? '🎊 起卦完成！' : `第 ${state.currentStep + 1} 爻 / 共 6 爻`}
+          </div>
+        </div>
+      `;
+
+      // 铜钱操作区
+      if (!state.showResult) {
+        html += `
+          <div class="coin-area">
+            <div class="coins-container">
+              ${state.coins.map((coin, i) => renderCoin(coin, i)).join('')}
+            </div>
+            ${state.currentLineResult ? renderResultBox() : ''}
+            <div class="buttons">
+              ${state.currentStep < 6 ? `
+                <button class="btn btn-primary" onclick="performShake()" ${state.isShaking || !state.canProceed ? 'disabled' : ''}>
+                  ${state.isShaking ? '🪙 摇卦中...' : `🪙 摇第 ${state.currentStep + 1} 爻`}
+                </button>
+              ` : ''}
+              ${state.currentStep > 0 ? `
+                <button class="btn btn-secondary" onclick="reset()">🔄 重来</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      // 六爻进度显示
+      if (state.lines.length > 0 && !state.showResult) {
+        html += `
+          <div class="hexagram-progress">
+            <h3>已得 ${state.lines.length} 爻 ${state.lines.length < 6 ? `(还需 ${6 - state.lines.length} 爻)` : ''}</h3>
+            <div class="lines-display">
+              ${state.lines.map((line, i) => `
+                <div class="line-row">
+                  ${line.value === 1 
+                    ? `<div class="line-bar yang ${line.changing ? 'changing' : ''}"></div>`
+                    : `<div class="line-bar yin ${line.changing ? 'changing' : ''}"></div><div class="line-gap"></div><div class="line-bar yin ${line.changing ? 'changing' : ''}"></div>`
+                  }
+                  ${line.changing ? '<span class="line-label">变</span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+            <div class="lines-tags">
+              ${state.lines.map((line, i) => `
+                <span class="line-tag ${line.changing ? 'changing' : 'normal'}">${posNames[i]}爻: ${line.name}</span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // 最终结果
+      if (state.showResult && state.hexagram) {
+        html += renderFinalResult();
+      }
+
+      // 起卦说明
+      html += `
+        <div class="instructions">
+          <h4>【金钱起卦法】</h4>
+          <div class="instructions-grid">
+            <div class="instruction-item yang-type">
+              <div>乾隆通宝（字面）</div>
+              <strong>正面 = 阳(3)</strong>
+            </div>
+            <div class="instruction-item yin-type">
+              <div>满文面（花面）</div>
+              <strong>反面 = 阴(2)</strong>
+            </div>
+          </div>
+          <div class="instructions-text">
+            三枚铜钱相加：6=老阴(变) | 7=少阳 | 8=少阴 | 9=老阳(变)<br>
+            从下至上，共摇六次，成一卦
+          </div>
+        </div>
+        <div class="footer">
+          易有太极，是生两仪<br>
+          两仪生四象，四象生八卦
+        </div>
+      `;
+
+      app.innerHTML = html;
+    }
+
+    // 渲染单枚铜钱
+    function renderCoin(coin, index) {
+      if (coin === null) {
+        return `<div class="coin empty ${state.isShaking ? 'shaking' : ''}"></div>`;
+      }
+      
+      const isYang = coin === 3;
+      if (isYang) {
+        // 正面 - 乾隆通宝
+        return `
+          <div class="coin flipped yang">
+            <div class="coin-hole"></div>
+            <span class="coin-char char-top">乾</span>
+            <span class="coin-char char-bottom">隆</span>
+            <span class="coin-char char-left">通</span>
+            <span class="coin-char char-right">宝</span>
+            <span class="coin-label">正面 阳3</span>
+          </div>
+        `;
+      } else {
+        // 反面 - 满文
+        return `
+          <div class="coin flipped yin">
+            <div class="coin-hole"></div>
+            <span class="coin-manchu manchu-left">ᠪᠣᠣ</span>
+            <span class="coin-manchu manchu-right">ᠴᡳᠣᠸᠠᠨ</span>
+            <span class="coin-label">反面 阴2</span>
+          </div>
+        `;
+      }
+    }
+
+    // 渲染本次结果框
+    function renderResultBox() {
+      const line = state.currentLineResult;
+      return `
+        <div class="result-box ${line.changing ? 'changing' : 'normal'}">
+          <div class="result-content">
+            <span class="result-sum">合计:<strong>${line.sum}</strong></span>
+            <span class="result-arrow">→</span>
+            <span class="result-name">${line.name}</span>
+            <span class="result-symbol">${line.symbol}</span>
+            ${line.changing ? '<span class="changing-badge">变爻</span>' : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // 渲染最终卦象结果
+    function renderFinalResult() {
+      const h = state.hexagram;
+      return `
+        <div class="final-result">
+          <div class="result-header">
+            <div class="result-name-large">${h.name}</div>
+            <div class="result-title">${h.title}</div>
+            <div class="result-trigrams">
+              <span>上卦: ${h.upperTrigram.symbol} ${h.upperTrigram.name}(${h.upperTrigram.element})</span>
+              <span>下卦: ${h.lowerTrigram.symbol} ${h.lowerTrigram.name}(${h.lowerTrigram.element})</span>
+            </div>
+          </div>
+          
+          <div class="hexagram-display">
+            <div class="lines-display">
+              ${h.lines.map((line, i) => `
+                <div class="line-row">
+                  ${line.value === 1 
+                    ? `<div class="line-bar yang ${line.changing ? 'changing' : ''}"></div>`
+                    : `<div class="line-bar yin ${line.changing ? 'changing' : ''}"></div><div class="line-gap"></div><div class="line-bar yin ${line.changing ? 'changing' : ''}"></div>`
+                  }
+                  ${line.changing ? '<span class="line-label">变</span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="six-lines-record">
+            <h4>六爻记录</h4>
+            <div class="six-lines-grid">
+              ${h.lines.map((line, i) => `
+                <div class="six-line-item ${line.changing ? 'changing' : 'normal'}">
+                  <div class="pos">${posNames[i]}</div>
+                  <div class="symbol">${line.symbol}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <h4>卦性</h4>
+            <p>${h.nature}</p>
+          </div>
+          
+          <div class="info-card">
+            <h4>卦辞</h4>
+            <p class="quote">「${h.brief}」</p>
+          </div>
+          
+          <div class="info-card">
+            <h4>象曰</h4>
+            <p>${h.desc}</p>
+          </div>
+          
+          ${h.lines.some(l => l.changing) ? `
+            <div class="info-card warning">
+              <h4>⚡ 变爻提示</h4>
+              <p>本卦有变爻（红色标记），表示该爻位有特别的变化意义，需特别留意此爻的爻辞指引。</p>
+            </div>
+          ` : ''}
+          
+          <div class="buttons" style="margin-top: 20px;">
+            <button class="btn btn-primary" onclick="reset()">🔄 重新起卦</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 交互逻辑 ====================
+    
+    // 执行摇卦
+    async function performShake() {
+      if (state.currentStep >= 6 || !state.canProceed) return;
+      
+      state.isShaking = true;
+      state.canProceed = false;
+      state.coins = [null, null, null];
+      state.currentLineResult = null;
+      render();
+      
+      // 依次显示三枚铜钱
+      const results = [];
+      for (let i = 0; i < 3; i++) {
+        await sleep(380);
+        const result = Math.random() < 0.5 ? 3 : 2; // 3=阳(正面), 2=阴(反面)
+        results.push(result);
+        state.coins[i] = result;
+        render();
+      }
+      
+      await sleep(450);
+      
+      // 计算爻的类型
+      const sum = results.reduce((a, b) => a + b, 0);
+      let line;
+      switch (sum) {
+        case 6: line = { value: 0, changing: true, name: '老阴', symbol: '⚋', sum: 6 }; break;
+        case 7: line = { value: 1, changing: false, name: '少阳', symbol: '⚊', sum: 7 }; break;
+        case 8: line = { value: 0, changing: false, name: '少阴', symbol: '⚋', sum: 8 }; break;
+        case 9: line = { value: 1, changing: true, name: '老阳', symbol: '⚊', sum: 9 }; break;
+        default: line = { value: 1, changing: false, name: '少阳', symbol: '⚊', sum: 7 };
+      }
+      
+      state.currentLineResult = line;
+      state.lines.push(line);
+      state.currentStep++;
+      state.isShaking = false;
+      render();
+      
+      // 完成六爻后显示最终结果
+      if (state.lines.length === 6) {
+        await sleep(900);
+        const key = state.lines.map(l => l.value).join('');
+        const result = hexagrams[key];
+        if (result) {
+          const upperTrigram = trigrams[key.slice(3, 6)];
+          const lowerTrigram = trigrams[key.slice(0, 3)];
+          state.hexagram = { ...result, key, upperTrigram, lowerTrigram, lines: state.lines };
+        }
+        state.showResult = true;
+        render();
+        // 滚动到结果区域
+        document.querySelector('.final-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        await sleep(250);
+        state.canProceed = true;
+        render();
+      }
+    }
+
+    // 重置
+    function reset() {
+      state = {
+        lines: [],
+        currentStep: 0,
+        coins: [null, null, null],
+        isShaking: false,
+        canProceed: true,
+        currentLineResult: null,
+        hexagram: null,
+        showResult: false
+      };
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 延时函数
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // ==================== 初始化 ====================
+    render();
+  </script>
+</body>
+</html>
